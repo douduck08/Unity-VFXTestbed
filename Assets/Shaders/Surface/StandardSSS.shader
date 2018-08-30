@@ -1,9 +1,19 @@
-﻿Shader "Custom/Standard Translucency" {
+﻿Shader "Custom/Standard SSS" {
+    // Ref: https://www.slideshare.net/colinbb/colin-barrebrisebois-gdc-2011-approximating-translucency-for-a-fast-cheap-and-convincing-subsurfacescattering-look-7170855
     Properties {
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
+        _BumpMap ("Normal (Normal)", 2D) = "bump" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
-        _Metallic ("Metallic", Range(0,1)) = 0.0
+        [Gamma] _Metallic ("Metallic", Range(0,1)) = 0.0
+        // Translucency
+        [Header(Subsurface Setting)]
+        _Ambient ("Ambient", Range(0,1)) = 0.0
+        _Distortion ("Distortion", Range(0,1)) = 0.0
+        _Power ("Power", Range(0.5,20)) = 4.0
+        _Scale ("Scale", Range(0.5,20)) = 0.5  // define in light will be better
+        _Thickness ("Thickness", Range(0,1)) = 0.5
+        // _Thickness ("Thickness (R)", 2D) = "black" {}
     }
     SubShader {
         Tags { "RenderType"="Opaque" }
@@ -30,15 +40,26 @@
         };
 
         sampler2D _MainTex;
+        sampler2D _BumpMap;
         half _Glossiness;
         half _Metallic;
         fixed4 _Color;
 
+        half _Ambient;
+        half _Distortion;
+        half _Power;
+        half _Scale;
+        half _Thickness;
+
         void surf (Input IN, inout SurfaceOutputTranslucent o) {
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
             o.Albedo = c.rgb;
+            o.Alpha = c.a;
+            o.Normal = UnpackNormal(tex2D(_BumpMap, IN.uv_MainTex));
+            o.Emission = 0;
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
+            o.Occlusion = 1;
         }
 
         inline half4 LightingTranslucent (SurfaceOutputTranslucent s, float3 viewDir, UnityGI gi) {
@@ -48,12 +69,17 @@
             half3 specColor;
             s.Albedo = DiffuseAndSpecularFromMetallic (s.Albedo, s.Metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
 
-            // shader relies on pre-multiply alpha-blend (_SrcBlend = One, _DstBlend = OneMinusSrcAlpha)
-            // this is necessary to handle transparency in physically correct way - only diffuse component gets affected by alpha
             half outputAlpha;
             s.Albedo = PreMultiplyAlpha (s.Albedo, s.Alpha, oneMinusReflectivity, /*out*/ outputAlpha);
 
+            // Translucency
+            half3 transDir = gi.light.dir + s.Normal * _Distortion;
+            half transDot = pow(saturate(dot(viewDir, -transDir)), _Power) * _Scale;
+            half3 transLight = gi.light.color * (transDot + _Ambient) * _Thickness;
+            half3 transAlbedo = s.Albedo * transLight;
+
             half4 c = UNITY_BRDF_PBS (s.Albedo, specColor, oneMinusReflectivity, s.Smoothness, s.Normal, viewDir, gi.light, gi.indirect);
+            c.rgb += transAlbedo;
             c.a = outputAlpha;
             return c;
         }
@@ -79,6 +105,7 @@
         }
 
         inline void LightingTranslucent_GI (SurfaceOutputTranslucent s, UnityGIInput data, inout UnityGI gi) {
+            // UNITY_GI(gi, s, data);
             #if defined(UNITY_PASS_DEFERRED) && UNITY_ENABLE_REFLECTION_BUFFERS
                 gi = UnityGlobalIllumination(data, s.Occlusion, s.Normal);
             #else
