@@ -8,10 +8,10 @@
         [Gamma] _Metallic ("Metallic", Range(0,1)) = 0.0
         // Translucency
         [Header(Subsurface Setting)]
-        _Ambient ("Ambient", Range(0,1)) = 0.0
+        _Ambient ("Ambient", Range(0,1)) = 0.0 // not work in deferred path
         _Distortion ("Distortion", Range(0,1)) = 0.0
-        _Power ("Power", Range(0.5,20)) = 4.0
-        _Scale ("Scale", Range(0.5,20)) = 0.5  // define in light will be better
+        _Power ("Power", Range(0.5,20)) = 4.0  // not work in deferred path
+        _Scale ("Scale", Range(0.5,20)) = 0.5  // not work in deferred path, define in light will be better
         _Thickness ("Thickness", Range(0,1)) = 0.5
         // _Thickness ("Thickness (R)", 2D) = "black" {}
     }
@@ -87,18 +87,19 @@
         inline half4 LightingTranslucent_Deferred (SurfaceOutputTranslucent s, float3 viewDir, UnityGI gi, out half4 outGBuffer0, out half4 outGBuffer1, out half4 outGBuffer2) {
             half oneMinusReflectivity;
             half3 specColor;
-            s.Albedo = DiffuseAndSpecularFromMetallic (s.Albedo, s.Metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
+            half3 albedo = DiffuseAndSpecularFromMetallic (s.Albedo, s.Metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
 
-            half4 c = UNITY_BRDF_PBS (s.Albedo, specColor, oneMinusReflectivity, s.Smoothness, s.Normal, viewDir, gi.light, gi.indirect);
+            half4 c = UNITY_BRDF_PBS (albedo, specColor, oneMinusReflectivity, s.Smoothness, s.Normal, viewDir, gi.light, gi.indirect);
 
             UnityStandardData data;
-            data.diffuseColor   = s.Albedo;
+            data.diffuseColor   = s.Albedo;  // original albedo
             data.occlusion      = s.Occlusion;
-            data.specularColor  = specColor;
+            data.specularColor  = half3 (_Distortion, _Thickness, s.Metallic); // custom gbuffer data
             data.smoothness     = s.Smoothness;
             data.normalWorld    = s.Normal;
 
             UnityStandardDataToGbuffer(data, outGBuffer0, outGBuffer1, outGBuffer2);
+            outGBuffer2.a = 0.33; // mask
 
             half4 emission = half4(s.Emission + c.rgb, 1);
             return emission;

@@ -54,7 +54,25 @@ half4 CalculateLight (unity_v2f_deferred i) {
     UnityStandardData data = UnityStandardDataFromGbuffer(gbuffer0, gbuffer1, gbuffer2);
 
     float3 eyeVec = normalize(wpos-_WorldSpaceCameraPos);
-    half oneMinusReflectivity = 1 - SpecularStrength(data.specularColor.rgb);
+    int mask = gbuffer2.w * 3;
+    half oneMinusReflectivity;
+    half3 transAlbedo = 0;
+    if (mask == 1) {
+        half ssDistortion = gbuffer1.r;
+        half ssThickness = gbuffer1.g;
+        half metallic = gbuffer1.b;
+
+        // Subsurface scatter
+        half3 transDir = light.dir + data.normalWorld * ssDistortion;
+        half transDot = pow(saturate(dot(eyeVec, transDir)), 4) * 0.5;
+        half3 transLight = _LightColor * (atten * transDot * ssThickness);
+        transAlbedo = data.diffuseColor * transLight;
+
+        // re-calcular specularColor
+        data.diffuseColor = DiffuseAndSpecularFromMetallic (data.diffuseColor, metallic, /*out*/ data.specularColor, /*out*/ oneMinusReflectivity);
+    } else {
+        oneMinusReflectivity = 1 - SpecularStrength(data.specularColor.rgb);
+    }
 
     UnityIndirect ind;
     UNITY_INITIALIZE_OUTPUT(UnityIndirect, ind);
@@ -62,12 +80,6 @@ half4 CalculateLight (unity_v2f_deferred i) {
     ind.specular = 0;
 
     half4 res = UNITY_BRDF_PBS (data.diffuseColor, data.specularColor, oneMinusReflectivity, data.smoothness, data.normalWorld, -eyeVec, light, ind);
-
-    // Subsurface Setting
-    half3 transDir = light.dir + data.normalWorld * 0.1;
-    half transDot = pow(saturate(dot(eyeVec, transDir)), 4);
-    half3 transLight = _LightColor * (atten * transDot * gbuffer2.a);
-    half3 transAlbedo = data.diffuseColor * transLight;
     res.rgb += transAlbedo;
 
     return res;
