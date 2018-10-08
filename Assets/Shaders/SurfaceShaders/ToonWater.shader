@@ -36,7 +36,6 @@
 
         void vert (inout appdata_full v) {
             v.vertex.z += sin(_Time.z * _Speed + (v.vertex.x * v.vertex.y * _Amount)) * _Height;
-            //v.vertex.z += sin(_Time.z * _Speed + (v.vertex.x * v.vertex.z * _Amount)) * _Height;
         }
 
         void surf (Input IN, inout SurfaceOutputStandard o) {
