@@ -1,19 +1,15 @@
 #ifndef RAY_MARCH_INCLUDED
 #define RAY_MARCH_INCLUDED
-// Heavily adapted from McGuire and Mara's original implementation
 // http://casual-effects.blogspot.com/2014/08/screen-space-ray-tracing.html
 
 #include "UnityCG.cginc"
 
+sampler2D _CameraDepthTexture;
+float4 _CameraDepthTexture_TexelSize;
+
 // Helper structs
 struct Ray {
     float3 origin;
-    float3 direction;
-};
-
-struct Segment {
-    float3 start;
-    float3 end;
     float3 direction;
 };
 
@@ -24,104 +20,80 @@ struct Result {
     int iterationCount;
 };
 
-// Uniforms
-sampler2D _CameraDepthTexture;
-float _MaximumMarchDistance;
-float _MaximumIterationCount;
-
 // Helper functions
 float GetSquaredDistance (float2 first, float2 second) {
     first -= second;
     return dot(first, first);
 }
 
-Result March (Ray ray, float4 screenPos, float stride, float jitter) {
+float2 GetScreenPos(float2 uv) {
+    float2 o = uv * 0.5f;
+    o.xy = float2(o.x, o.y * _ProjectionParams.x) + 0.5f;
+    return o;
+}
+
+Result March (Ray ray, float maximumMarchDistance, float maximumIteration, float stride, float jitter) {
     Result result;
     UNITY_INITIALIZE_OUTPUT(Result, result);
 
-    float magnitude = (ray.origin.z + ray.direction.z * _MaximumMarchDistance > -_ProjectionParams.y) ? 
-        (-_ProjectionParams.y - ray.origin.z) / ray.direction.z : _MaximumMarchDistance;
+    float rayLength = (ray.origin.z + ray.direction.z * maximumMarchDistance > -_ProjectionParams.y) ? 
+        (-_ProjectionParams.y - ray.origin.z) / ray.direction.z : maximumMarchDistance;
+    float3 rayEnd = ray.origin + ray.direction * rayLength;
 
-    Segment segment;
-    segment.start = ray.origin;
-    segment.end = ray.origin + ray.direction * magnitude;
+    float4 h0 = mul(UNITY_MATRIX_P, ray.origin);
+    float4 h1 = mul(UNITY_MATRIX_P, rayEnd);
+    const float2 k01 = rcp(float2(h0.w, h1.w));  // k0 and k1
 
-    float4 h0 = mul(UNITY_MATRIX_P, segment.start);
-    float4 h1 = mul(UNITY_MATRIX_P, segment.end);
-    const float2 homogenizers = rcp(float2(h0.w, h1.w));  // k0 and k1
-    segment.start *= homogenizers.x;  // q0
-    segment.end *= homogenizers.y;  // q1
+    float3 q0 = ray.origin * k01.x;
+    float3 q1 = rayEnd * k01.y;
+    float2 p0 = h0.xy * k01.x;
+    float2 p1 = h1.xy * k01.y;
 
-    // Screen-space endpoints, p0 and p1
-    float4 endPoints = float4(h0.xy, h1.xy) * homogenizers.xxyy; 
-    endPoints.zw += step(GetSquaredDistance(endPoints.xy, endPoints.zw), 0.0001) * max(_ProjectionParams.z, _ProjectionParams.w);
-    float2 displacement = endPoints.zw - endPoints.xy;
+    p1 += step(GetSquaredDistance(p0, p1), 0.0001) * max(_ProjectionParams.z, _ProjectionParams.w);
+    float2 delta = p1 - p0;
 
     bool isPermuted = false;
-    if (abs(displacement.x) < abs(displacement.y)) {
+    if (abs(delta.x) < abs(delta.y)) {
         isPermuted = true;
-        displacement = displacement.yx;
-        endPoints.xyzw = endPoints.yxwz;
+        delta = delta.yx;
+        p0 = p0.yx;
+        p1 = p1.yx;
+        stride /= _ScreenParams.y;
+    } else {
+        stride /= _ScreenParams.x;
     }
 
-    float direction = sign(displacement.x);
-    float invdx = direction / displacement.x;
-    segment.direction = (segment.end - segment.start) * invdx;
-    float4 derivatives = float4(float2(direction, displacement.y * invdx), (homogenizers.y - homogenizers.x) * invdx, segment.direction.z); // float2(dp), float(dk), float(z)
+    float stepDir = sign(delta.x);
+    float invdx = stepDir / delta.x;
 
-    derivatives *= stride;
-    segment.direction *= stride;
+    float2 dP = float2(stepDir, delta.y * invdx);
+    float3 dQ = (q1 - q0) * invdx;
+    float  dk = (k01.y - k01.x) * invdx;
 
-    float2 z = 0.0;
-    float4 tracker = float4(endPoints.xy, homogenizers.x, segment.start.z) + derivatives * jitter; // floa2(p0), 
+    float4 derivatives = float4(dP, dQ.z, dk) * stride;
+    float4 tracker = float4(p0, q0.z, k01.x) + derivatives * jitter;
+    float z = 0.0;
+    float end = p1.x * stepDir;
 
-    for (int i = 0; i < 16; ++i) {
-        if (any(result.uv < 0.0) || any(result.uv > 1.0)) {
-            result.isHit = false;
-            return result;
-        }
-
+    [loop]
+    for (int stepCount = 0; stepCount < maximumIteration; ++stepCount) {
         tracker += derivatives;
-
-        z.x = z.y;
-        z.y = tracker.w + derivatives.w * 0.5;
-        z.y /= tracker.z + derivatives.z * 0.5;
-
-#if SSR_KILL_FIREFLIES
-        UNITY_FLATTEN
-        if (z.y < -_MaximumMarchDistance) {
-            result.isHit = false;
+        result.uv = isPermuted ? tracker.yx : tracker.xy;
+        result.uv = GetScreenPos(result.uv);
+        if (any(result.uv < 0.0) || any(result.uv > 1.0)) {
             return result;
         }
-#endif
 
-        UNITY_FLATTEN
-        if (z.y > z.x) {
-            float k = z.x;
-            z.x = z.y;
-            z.y = k;
-        }
-
-        float2 uv = tracker.xy;
-
-        UNITY_FLATTEN
-        if (isPermuted)
-            uv = uv.yx;
-
-        uv *= _ScreenParams.xy;
-
-        float d = SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(screenPos));
+        z = (tracker.z + derivatives.z * 0.5) / (tracker.w + derivatives.w * 0.5);
+        float d = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, result.uv);
         float depth = -LinearEyeDepth(d);
-
-        UNITY_FLATTEN
-        if (z.y < depth) {
-            result.uv = uv;
+        if (z < depth) {
             result.isHit = true;
-            result.iterationCount = i + 1;
+            result.position.z = z;
+            result.iterationCount = stepCount + 1;
             return result;
         }
     }
-
     return result;
 }
 

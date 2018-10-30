@@ -62,6 +62,8 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _MaximumIteration: 256
+    - _MaximumMarchDistance: 100
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -69,6 +71,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _Thickness: 4
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
