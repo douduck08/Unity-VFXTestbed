@@ -8,7 +8,7 @@
         [Toggle(ENABLE_REFRACTION)] _EnableRefraction ("Enable Refraction", Float) = 0
         _Intensity ("Intensity", Range (0, 1)) = 0.5
         _RimPower ("Fresnel Angle", Range(1, 20) ) = 5
-        _RefractionRatio ("Refraction Ratio", float) = 1
+        _RefractionRatio ("Refraction Ratio", Range (0, 1)) = 0.75
 
         [Header(Ray Marching)]
         _MaximumMarchDistance ("Maximum Distance", float) = 100.0
