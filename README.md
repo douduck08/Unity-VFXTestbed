@@ -7,7 +7,6 @@
 
 #### Unlit shader
 * ScreenSpaceReflection - SSR with raymarching, which is implemented on single object but full screen post-process.
-* SurfaceCover - Tesing for coloring surface with a volume object.
 
 #### Internal shader
 Used in `Graphic Settings > Built-in Shader Settings`, which is needed by `StandardSSS.shader`
