@@ -6,8 +6,8 @@
         _Metallic ("Metallic", Range(0,1)) = 0.0
 
         [Header(VAT)]
-        _PosTex ("Position Map (RGB)", 2D) = "white" {}
-        _RotTex ("Rotation Map (RGB)", 2D) = "grey" {}
+        _PosTex ("Position Map", 2D) = "white" {}
+        _RotTex ("Rotation Map", 2D) = "grey" {}
         _TotalFrames ("_numOfFrames", Float) = 0.0
         _PivMax ("_pivMax", Float) = 0.0
         _PivMin ("_pivMin", Float) = 0.0
