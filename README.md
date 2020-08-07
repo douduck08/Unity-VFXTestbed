@@ -10,3 +10,6 @@
 
 #### Internal shader
 Used in `Graphic Settings > Built-in Shader Settings`, which is needed by `StandardSSS.shader`
+
+### Houdini VAT experment
+SideFX Lab version: 521
