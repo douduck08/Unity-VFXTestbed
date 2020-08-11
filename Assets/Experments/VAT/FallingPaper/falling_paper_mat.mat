@@ -7,11 +7,11 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: fractured_box_mat
-  m_Shader: {fileID: 4800000, guid: 2e8141c791240ac45b1b3370f1219ba8, type: 3}
-  m_ShaderKeywords: 
+  m_Name: falling_paper_mat
+  m_Shader: {fileID: 4800000, guid: e8e377f8cf1cb7c40bd3cb465366a8b3, type: 3}
+  m_ShaderKeywords: _PACKED_NORMAL_ON
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -47,6 +47,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NormTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -56,11 +60,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _PosTex:
-        m_Texture: {fileID: 2800000, guid: b00842c1cc4afa4479abbd6692ed4269, type: 3}
+        m_Texture: {fileID: 2800000, guid: 504ff47d7ddb9c74595dd46d5e6c1201, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RotTex:
-        m_Texture: {fileID: 2800000, guid: ae709aa7066cfc044ae6d4f0dbc63745, type: 3}
+        m_Texture: {fileID: 2800000, guid: 41d954b82a77da748b57ca1793e2da2e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _posTex:
@@ -83,15 +87,16 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _PACKED_NORMAL: 1
     - _Parallax: 0.02
-    - _PivMax: 2.4009085
-    - _PivMin: -0.4248534
-    - _PosMax: 3.0606847
-    - _PosMin: -2.4813583
+    - _PivMax: 39.954247
+    - _PivMin: -24.993935
+    - _PosMax: 74.17394
+    - _PosMin: -96.8002
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TotalFrames: 99
+    - _TotalFrames: 159
     - _UVSec: 0
     - _ZWrite: 1
     - _boundingMax: 0.4547024

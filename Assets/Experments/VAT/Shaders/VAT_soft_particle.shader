@@ -1,4 +1,4 @@
-﻿Shader "Houdini VAT/soft" {
+﻿Shader "Houdini VAT/soft particle" {
     Properties {
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
@@ -42,18 +42,20 @@
 
         struct Input {
             float2 uv_MainTex;
+            float4 color : COLOR;
         };
 
         void vert(inout appdata_full v) {
             float4 bounds = float4(_PosMin, _PosMax, 0, 0);
+            float currentFrames = v.color.r * _TotalFrames;
 
             float3 outPosition1, outNormal1;
-            SoftVAT(v.vertex, v.texcoord1, _PosTex, _NormTex, _PosTex_TexelSize, bounds, _TotalFrames, _CurrentFrames, outPosition1, outNormal1);
+            SoftVAT(v.vertex, v.texcoord1, _PosTex, _NormTex, _PosTex_TexelSize, bounds, _TotalFrames, currentFrames, outPosition1, outNormal1);
 
             float3 outPosition2, outNormal2;
-            SoftVAT(v.vertex, v.texcoord1, _PosTex, _NormTex, _PosTex_TexelSize, bounds, _TotalFrames, _CurrentFrames + 1, outPosition2, outNormal2);
+            SoftVAT(v.vertex, v.texcoord1, _PosTex, _NormTex, _PosTex_TexelSize, bounds, _TotalFrames, currentFrames + 1, outPosition2, outNormal2);
 
-            float t = frac(_CurrentFrames);
+            float t = frac(currentFrames);
             v.vertex.xyz = lerp(outPosition1, outPosition2, t);
             v.normal = normalize(lerp(outNormal1, outNormal2, t));
         }
