@@ -1,4 +1,4 @@
-﻿Shader "Houdini VAT/soft (particle)" {
+﻿Shader "Houdini VAT/soft (dithering particle)" {
     Properties {
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
@@ -20,7 +20,7 @@
         Cull Off
 
         CGPROGRAM
-        #pragma surface surf Standard nolightmap nometa noforwardadd fullforwardshadows vertex:vert
+        #pragma surface surf Standard noshadow nolightmap nometa noforwardadd vertex:vert
         #pragma target 3.0
 
         #pragma multi_compile_instancing
@@ -48,6 +48,7 @@
         struct Input {
             float2 uv_MainTex;
             float4 color;
+            float4 screenPos;
         };
 
         void vert(inout appdata_full v, out Input o) {
@@ -74,6 +75,8 @@
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
             o.Alpha = c.a * IN.color.a;
+
+            Dither8x8Clip(IN.screenPos, o.Alpha);
         }
         ENDCG
     }

@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: falling_paper_mat_particle
-  m_Shader: {fileID: 4800000, guid: e1dad1f12707a1d4697082bedd90f8fc, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: 4800000, guid: 59f35c371ff64cc43a53563b539fade2, type: 3}
+  m_ShaderKeywords: _PACKED_NORMAL_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -87,7 +87,7 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _PACKED_NORMAL: 0
+    - _PACKED_NORMAL: 1
     - _Parallax: 0.02
     - _PivMax: 39.954247
     - _PivMin: -24.993935
