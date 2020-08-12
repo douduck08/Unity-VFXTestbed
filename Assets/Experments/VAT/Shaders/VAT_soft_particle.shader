@@ -20,7 +20,7 @@
         Cull Off
 
         CGPROGRAM
-        #pragma surface surf Standard nolightmap nometa noforwardadd fullforwardshadows vertex:vert
+        #pragma surface surf Standard nolightmap nometa noforwardadd fullforwardshadows addshadow vertex:vert
         #pragma target 3.0
 
         #pragma multi_compile_instancing
