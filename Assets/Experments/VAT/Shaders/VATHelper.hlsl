@@ -17,10 +17,11 @@ float3 VAT_ConvertSpace (float3 v) {
     return v.xzy * float3(-1, 1, 1);
 }
 
-float4 GetSampleUV (float4 texelSize, float uv, float currentFrame, float totalFrame) {
-    float frame = floor(clamp(currentFrame, 0, totalFrame - 1));
-    float v = 1.0 - (frame + 0.5) * abs(texelSize.y);
-    return float4(uv.x, v, 0, 0);
+float4 GetSampleUV (float4 texelSize, float2 uv, float currentFrame, float totalFrame) {
+    float frame = (int)(clamp(currentFrame, 0, totalFrame - 1));
+    float stride = texelSize.w / totalFrame;
+    float offset = frame * stride * abs(texelSize.y);
+    return float4(uv.x, uv.y - offset, 0, 0);
 }
 
 void SoftVAT (
@@ -40,7 +41,33 @@ out float3 outNormal
 
     outPosition = VAT_ConvertSpace(lerp(bounds.x, bounds.y, p.xyz));
 
-#ifndef _PACKED_NORMAL_ON
+#ifdef _PACKED_NORMAL_ON
+    // Alpha-packed normal
+    outNormal = VAT_ConvertSpace(VAT_UnpackAlpha(p.w));
+#else
+    // Normal vector from normal map
+    outNormal = VAT_ConvertSpace(tex2Dlod(normalMap, sampleUV).xyz);
+#endif
+}
+
+void FluidVAT (
+float3 position,
+float2 uv0,
+sampler2D positionMap,
+sampler2D normalMap,
+float4 texelSize,
+float2 bounds,
+float totalFrame,
+float currentFrame,
+out float3 outPosition,
+out float3 outNormal
+) {
+    float4 sampleUV = GetSampleUV(texelSize, uv0, currentFrame, totalFrame);
+    float4 p = tex2Dlod(positionMap, sampleUV);
+
+    outPosition = VAT_ConvertSpace(lerp(bounds.x, bounds.y, p.xyz));
+
+#ifdef _PACKED_NORMAL_ON
     // Alpha-packed normal
     outNormal = VAT_ConvertSpace(VAT_UnpackAlpha(p.w));
 #else
@@ -68,7 +95,7 @@ out float3 outNormal
     float4 r = tex2Dlod(rotationMap, sampleUV);
 
     float3 offset = lerp(bounds.x, bounds.y, p.xyz);
-    float3 pivot = lerp(bounds.z, bounds.w, color);
+    // float3 pivot = lerp(bounds.z, bounds.w, color);
     float4 rot = (r * 2 - 1);
 
     // outPosition = VAT_RotateVector(position - pivot, rot) + pivot + offset;

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: fluid_mat
+  m_Shader: {fileID: 4800000, guid: 0efe76664d2adbc42bcaf58cd6268c76, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _NormTex:
+        m_Texture: {fileID: 2800000, guid: 0c332d5c4ffe9354a931f07d17c37aee, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _PosTex:
+        m_Texture: {fileID: 2800000, guid: b229128b9b4efcd44ac44137db8fb51c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _CurrentFrames: 0
+    - _Glossiness: 1
+    - _Metallic: 0
+    - _PACKED_NORMAL: 0
+    - _PosMax: 4.0832176
+    - _PosMin: -1.081261
+    - _TotalFrames: 178
+    m_Colors:
+    - _Color: {r: 0.3443396, g: 1, b: 0.7530748, a: 1}
