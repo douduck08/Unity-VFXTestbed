@@ -77,6 +77,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
+    - _CONVERT_SPACE: 1
     - _CurrentFrames: -16.09
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -93,6 +94,7 @@ Material:
     - _PivMin: -24.993935
     - _PosMax: 74.17394
     - _PosMin: -96.8002
+    - _RELATIVE_POS: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

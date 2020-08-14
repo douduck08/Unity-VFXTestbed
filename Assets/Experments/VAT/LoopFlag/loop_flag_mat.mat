@@ -7,10 +7,10 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: falling_paper_mat_particle
-  m_Shader: {fileID: 4800000, guid: 59f35c371ff64cc43a53563b539fade2, type: 3}
-  m_ShaderKeywords: _PACKED_NORMAL_ON
-  m_LightmapFlags: 0
+  m_Name: loop_flag_mat
+  m_Shader: {fileID: 4800000, guid: e8e377f8cf1cb7c40bd3cb465366a8b3, type: 3}
+  m_ShaderKeywords: _PACKED_NORMAL_ON _RELATIVE_POS_ON
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -51,6 +51,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NormalTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -60,11 +64,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _PosTex:
-        m_Texture: {fileID: 2800000, guid: 504ff47d7ddb9c74595dd46d5e6c1201, type: 3}
+        m_Texture: {fileID: 2800000, guid: bd34992ff68f8cf4b8cc9c961daa7507, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RotTex:
-        m_Texture: {fileID: 2800000, guid: 41d954b82a77da748b57ca1793e2da2e, type: 3}
+        m_Texture: {fileID: 2800000, guid: ae709aa7066cfc044ae6d4f0dbc63745, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _posTex:
@@ -76,43 +80,29 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BlendOp: 0
     - _BumpScale: 1
-    - _CONVERT_SPACE: 1
-    - _CameraFadingEnabled: 0
-    - _CameraFarFadeDistance: 2
-    - _CameraNearFadeDistance: 1
-    - _Cull: 2
+    - _CONVERT_SPACE: 0
     - _CurrentFrames: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DistortionBlend: 0.5
-    - _DistortionEnabled: 0
-    - _DistortionStrength: 1
-    - _DistortionStrengthScaled: 0
     - _DstBlend: 0
-    - _EmissionEnabled: 0
-    - _FlipbookMode: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 0.05
     - _GlossyReflections: 1
-    - _LightingEnabled: 1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _PACKED_NORMAL: 1
     - _Parallax: 0.02
-    - _PivMax: 39.954247
-    - _PivMin: -24.993935
-    - _PosMax: 74.17394
-    - _PosMin: -96.8002
+    - _PivMax: 2.4009085
+    - _PivMin: -0.4248534
+    - _PosMax: 0.959291
+    - _PosMin: -0.7593954
+    - _RELATIVE_POS: 1
     - _SmoothnessTextureChannel: 0
-    - _SoftParticlesEnabled: 0
-    - _SoftParticlesFarFadeDistance: 1
-    - _SoftParticlesNearFadeDistance: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TotalFrames: 159
+    - _TotalFrames: 128
     - _UVSec: 0
     - _ZWrite: 1
     - _boundingMax: 0.4547024
@@ -123,7 +113,5 @@ Material:
     - _speed: 0.24242425
     - _timeoffset: 0
     m_Colors:
-    - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.3160377, b: 0.3160377, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}

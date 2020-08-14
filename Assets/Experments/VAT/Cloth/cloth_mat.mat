@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: cloth_mat
   m_Shader: {fileID: 4800000, guid: e8e377f8cf1cb7c40bd3cb465366a8b3, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: _CONVERT_SPACE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -81,6 +81,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
+    - _CONVERT_SPACE: 1
     - _CurrentFrames: 200
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -97,6 +98,7 @@ Material:
     - _PivMin: -0.4248534
     - _PosMax: 5.0000005
     - _PosMin: -5.284233
+    - _RELATIVE_POS: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

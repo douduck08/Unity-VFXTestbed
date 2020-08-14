@@ -15,6 +15,7 @@ float3 VAT_UnpackAlpha (float a) {
 
 float3 VAT_ConvertSpace (float3 v) {
     return v.xzy * float3(-1, 1, 1);
+    // return v.xyz;
 }
 
 float4 GetSampleUV (float4 texelSize, float2 uv, float currentFrame, float totalFrame) {
@@ -40,6 +41,9 @@ out float3 outNormal
     float4 p = tex2Dlod(positionMap, sampleUV);
 
     outPosition = VAT_ConvertSpace(lerp(bounds.x, bounds.y, p.xyz));
+#ifdef _RELATIVE_POS_ON
+    outPosition += position;
+#endif
 
 #ifdef _PACKED_NORMAL_ON
     // Alpha-packed normal

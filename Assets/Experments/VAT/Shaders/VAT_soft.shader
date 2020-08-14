@@ -13,6 +13,7 @@
         _PosMax ("_posMax", Float) = 0.0
         _PosMin ("_posMin", Float) = 0.0
         _CurrentFrames ("Current Frame", Float) = 0.0
+        [Toggle(_RELATIVE_POS_ON)] _RELATIVE_POS ("Relative Pos", Float) = 0
     }
 
     SubShader {
@@ -23,6 +24,7 @@
         #pragma surface surf Standard addshadow vertex:vert
         #pragma target 3.0
         #pragma shader_feature _PACKED_NORMAL_ON
+        #pragma shader_feature _RELATIVE_POS_ON
 
         #include "VATHelper.hlsl"
 
