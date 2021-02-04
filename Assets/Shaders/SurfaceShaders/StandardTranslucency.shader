@@ -1,4 +1,4 @@
-﻿Shader "Custom/Standard SSS" {
+﻿Shader "Custom/Standard Translucency" {
     // Ref: https://www.slideshare.net/colinbb/colin-barrebrisebois-gdc-2011-approximating-translucency-for-a-fast-cheap-and-convincing-subsurfacescattering-look-7170855
     Properties {
         _Color ("Color", Color) = (1,1,1,1)
@@ -107,12 +107,12 @@
 
         inline void LightingTranslucent_GI (SurfaceOutputTranslucent s, UnityGIInput data, inout UnityGI gi) {
             // UNITY_GI(gi, s, data);
-            #if defined(UNITY_PASS_DEFERRED) && UNITY_ENABLE_REFLECTION_BUFFERS
-                gi = UnityGlobalIllumination(data, s.Occlusion, s.Normal);
-            #else
-                Unity_GlossyEnvironmentData g = UnityGlossyEnvironmentSetup(s.Smoothness, data.worldViewDir, s.Normal, lerp(unity_ColorSpaceDielectricSpec.rgb, s.Albedo, s.Metallic));
-                gi = UnityGlobalIllumination(data, s.Occlusion, s.Normal, g);
-            #endif
+#if defined(UNITY_PASS_DEFERRED) && UNITY_ENABLE_REFLECTION_BUFFERS
+            gi = UnityGlobalIllumination(data, s.Occlusion, s.Normal);
+#else
+            Unity_GlossyEnvironmentData g = UnityGlossyEnvironmentSetup(s.Smoothness, data.worldViewDir, s.Normal, lerp(unity_ColorSpaceDielectricSpec.rgb, s.Albedo, s.Metallic));
+            gi = UnityGlobalIllumination(data, s.Occlusion, s.Normal, g);
+#endif
         }
 
         ENDCG
